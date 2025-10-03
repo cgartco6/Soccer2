@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerAI Predictor - Real-Time Football Predictions</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-robot"></i>
+                <span>SoccerAI</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active">Dashboard</a>
+                <a href="#predictions" class="nav-link">Live Predictions</a>
+                <a href="#odds" class="nav-link">Real Odds</a>
+                <a href="#analytics" class="nav-link">Team Analytics</a>
+                <a href="#live" class="nav-link">Live Updates</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-primary" onclick="refreshAllData()">
+                    <i class="fas fa-sync-alt"></i> Refresh Data
+                </button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Data Sources Status -->
+    <div class="sources-bar">
+        <div class="container">
+            <div class="source-items">
+                <div class="source-item">
+                    <img src="https://www.hollywoodbets.net/favicon.ico" alt="Hollywoodbets" class="source-logo">
+                    <span>Hollywoodbets: <strong id="hb-status">Connected</strong></span>
+                </div>
+                <div class="source-item">
+                    <img src="https://www.betway.co.za/favicon.ico" alt="Betway" class="source-logo">
+                    <span>Betway: <strong id="bw-status">Connected</strong></span>
+                </div>
+                <div class="source-item">
+                    <img src="https://fbref.com/favicon.ico" alt="FBRef" class="source-logo">
+                    <span>FBRef: <strong id="fb-status">Connected</strong></span>
+                </div>
+                <div class="source-item">
+                    <span>Last Update: <strong id="last-update">Just now</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <main id="dashboard">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Real-Time Soccer AI Predictions</h1>
+                    <p class="hero-subtitle">Live data from Hollywoodbets, Betway, and FBRef with advanced AI analysis</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="live-matches">0</h3>
+                                <p>Live Matches</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="data-points">0</h3>
+                                <p>Data Points</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3 id="update-speed">0ms</h3>
+                                <p>Update Speed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hero-actions">
+                        <button class="btn-large primary" onclick="loadLiveData()">
+                            <i class="fas fa-bolt"></i> Load Live Data
+                        </button>
+                        <button class="btn-large secondary" onclick="showRealOdds()">
+                            <i class="fas fa-coins"></i> View Real Odds
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Matches with Real Data -->
+        <section class="matches-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Live Match Predictions</h2>
+                    <div class="section-actions">
+                        <button class="btn-filter active" data-filter="all">All Matches</button>
+                        <button class="btn-filter" data-filter="premier">Premier League</button>
+                        <button class="btn-filter" data-filter="laliga">La Liga</button>
+                        <button class="btn-filter" data-filter="seriea">Serie A</button>
+                        <button class="btn-filter" data-filter="value">Value Bets</button>
+                    </div>
+                </div>
+
+                <div class="matches-grid" id="matchesGrid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading real-time data from betting sites and FBRef...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Real Odds Comparison -->
+        <section id="odds" class="odds-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Real Odds Comparison</h2>
+                    <p>Live odds from Hollywoodbets vs Betway with AI value detection</p>
+                </div>
+
+                <div class="odds-comparison" id="oddsComparison">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading odds comparison data...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Advanced Predictions with Real Stats -->
+        <section id="predictions" class="predictions-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>AI Value Bet Predictions</h2>
+                    <p>Using real statistics from FBRef and live odds from bookmakers</p>
+                </div>
+
+                <div class="predictions-grid">
+                    <div class="prediction-model-card">
+                        <div class="model-header">
+                            <div class="model-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h3>Win + BTTS Value Bets</h3>
+                            <span class="model-accuracy" id="winBttsAccuracy">Loading...</span>
+                        </div>
+                        <div class="model-predictions" id="winBttsPredictions">
+                            <!-- Real value bets will be loaded here -->
+                        </div>
+                        <div class="model-source">
+                            <small>Data: FBRef Stats + Hollywoodbets Odds</small>
+                        </div>
+                    </div>
+
+                    <div class="prediction-model-card">
+                        <div class="model-header">
+                            <div class="model-icon">
+                                <i class="fas fa-equals"></i>
+                            </div>
+                            <h3>Draw + BTTS Value Bets</h3>
+                            <span class="model-accuracy" id="drawBttsAccuracy">Loading...</span>
+                        </div>
+                        <div class="model-predictions" id="drawBttsPredictions">
+                            <!-- Real value bets will be loaded here -->
+                        </div>
+                        <div class="model-source">
+                            <small>Data: FBRef Stats + Betway Odds</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Value Bet Metrics -->
+                <div class="value-metrics">
+                    <h3>Value Bet Detection Metrics</h3>
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <h4>Expected Value (EV)</h4>
+                            <div class="metric-value" id="ev-metric">+15.2%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill positive" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Probability Accuracy</h4>
+                            <div class="metric-value" id="accuracy-metric">87.3%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill positive" style="width: 87%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <h4>Edge over Bookmaker</h4>
+                            <div class="metric-value" id="edge-metric">+8.7%</div>
+                            <div class="metric-bar">
+                                <div class="metric-fill positive" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Analytics with FBRef Data -->
+        <section id="analytics" class="analytics-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Advanced Team Analytics</h2>
+                    <p>Real statistics from FBRef with AI-powered insights</p>
+                </div>
+
+                <div class="analytics-search">
+                    <div class="search-box">
+                        <input type="text" id="teamSearch" placeholder="Search team (e.g., Manchester City, Barcelona)">
+                        <button class="search-btn" onclick="searchTeamWithFBRef()">
+                            <i class="fas fa-search"></i> Search FBRef
+                        </button>
+                    </div>
+                </div>
+
+                <div class="analytics-dashboard" id="teamAnalytics">
+                    <div class="analytics-placeholder">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>FBRef Analytics Dashboard</h3>
+                        <p>Search for a team to view real statistical analysis</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Data Updates -->
+        <section id="live" class="live-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Live Data Feed</h2>
+                    <p>Real-time updates from all data sources</p>
+                </div>
+
+                <div class="live-grid">
+                    <div class="live-card">
+                        <div class="live-header">
+                            <h3><i class="fas fa-database"></i> Data Sources Monitor</h3>
+                            <span class="live-badge active">LIVE</span>
+                        </div>
+                        <div class="live-content">
+                            <div class="data-sources">
+                                <div class="source-monitor">
+                                    <div class="source-info">
+                                        <img src="https://www.hollywoodbets.net/favicon.ico" alt="Hollywoodbets" class="source-logo-small">
+                                        <span>Hollywoodbets</span>
+                                    </div>
+                                    <div class="source-stats">
+                                        <span id="hb-matches">0 matches</span>
+                                        <span class="status-dot connected"></span>
+                                    </div>
+                                </div>
+                                <div class="source-monitor">
+                                    <div class="source-info">
+                                        <img src="https://www.betway.co.za/favicon.ico" alt="Betway" class="source-logo-small">
+                                        <span>Betway</span>
+                                    </div>
+                                    <div class="source-stats">
+                                        <span id="bw-matches">0 matches</span>
+                                        <span class="status-dot connected"></span>
+                                    </div>
+                                </div>
+                                <div class="source-monitor">
+                                    <div class="source-info">
+                                        <img src="https://fbref.com/favicon.ico" alt="FBRef" class="source-logo-small">
+                                        <span>FBRef</span>
+                                    </div>
+                                    <div class="source-stats">
+                                        <span id="fb-teams">0 teams</span>
+                                        <span class="status-dot connected"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="live-card">
+                        <div class="live-header">
+                            <h3><i class="fas fa-robot"></i> AI Processing Log</h3>
+                            <span class="live-badge active">LIVE</span>
+                        </div>
+                        <div class="live-content">
+                            <div class="activity-log" id="activityLog">
+                                <div class="log-entry">
+                                    <span class="log-time" id="current-time">--:--:--</span>
+                                    <span class="log-message">System initialized. Ready to fetch real data.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SoccerAI Predictor</h3>
+                    <p>Real-time football predictions using live data from Hollywoodbets, Betway, and FBRef.</p>
+                    <div class="data-sources-info">
+                        <h4>Data Sources</h4>
+                        <div class="source-badges">
+                            <span class="source-badge">Hollywoodbets</span>
+                            <span class="source-badge">Betway</span>
+                            <span class="source-badge">FBRef</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>Real Data Features</h4>
+                    <ul>
+                        <li><a href="#">Live Odds Comparison</a></li>
+                        <li><a href="#">FBRef Statistics</a></li>
+                        <li><a href="#">Value Bet Detection</a></li>
+                        <li><a href="#">Real-time Updates</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>AI Systems</h4>
+                    <ul>
+                        <li><a href="#">Probability Models</a></li>
+                        <li><a href="#">Machine Learning</a></li>
+                        <li><a href="#">Data Processing</a></li>
+                        <li><a href="#">API Integration</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SoccerAI Predictor. Using real data from Hollywoodbets, Betway, and FBRef.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Data Sources</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="js/real-data-agents.js"></script>
+    <script src="js/ml-models.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
