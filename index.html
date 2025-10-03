@@ -1,0 +1,1548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoccerAI Pro - Advanced Football Predictions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ===== CSS VARIABLES ===== */
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #e74c3c;
+            --text: #ffffff;
+            --text-secondary: #b0b0b0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-radius: 12px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s ease;
+        }
+
+        /* ===== BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(90deg, #fff, var(--highlight));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, var(--highlight), #ff6b95);
+            color: white;
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .navbar {
+            background: rgba(22, 33, 62, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .nav-logo i {
+            color: var(--highlight);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--highlight);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: var(--transition);
+        }
+
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(233, 69, 96, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(15, 52, 96, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--highlight);
+        }
+
+        .stat-info h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== MATCHES SECTION ===== */
+        .matches-section {
+            background: rgba(15, 52, 96, 0.1);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--highlight);
+            color: white;
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .match-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .match-teams {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-grow: 1;
+        }
+
+        .team {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .team.home {
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        .vs {
+            font-weight: bold;
+            color: var(--highlight);
+            min-width: 60px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .match-prediction {
+            background: rgba(15, 52, 96, 0.3);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .prediction-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .badge-home-win { background: var(--success); }
+        .badge-draw { background: var(--warning); color: #333; }
+        .badge-away-win { background: var(--danger); }
+
+        .confidence-meter {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin: 0.5rem 0;
+            overflow: hidden;
+        }
+
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            border-radius: 3px;
+        }
+
+        .bet-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .bet-tag {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--highlight);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .match-details {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== CUSTOM PREDICTION SECTION ===== */
+        .custom-prediction {
+            background: rgba(15, 52, 96, 0.2);
+        }
+
+        .prediction-form {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            color: var(--text);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--highlight);
+            box-shadow: 0 0 0 2px rgba(233, 69, 96, 0.2);
+        }
+
+        .teams-input {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .vs-static {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--highlight);
+        }
+
+        .prediction-result {
+            background: rgba(15, 52, 96, 0.3);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            color: var(--highlight);
+        }
+
+        .probability-display {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .probability-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .probability-card.active {
+            background: rgba(233, 69, 96, 0.2);
+            border: 1px solid var(--highlight);
+        }
+
+        .probability-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .probability-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .factors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .factor-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .factor-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .factor-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== PREDICTIONS SECTION ===== */
+        .predictions-section {
+            background: rgba(15, 52, 96, 0.1);
+        }
+
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .prediction-model-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .prediction-model-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .model-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--highlight), #ff6b95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .model-accuracy {
+            background: var(--success);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        .prediction-item {
+            background: rgba(15, 52, 96, 0.3);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: var(--transition);
+        }
+
+        .prediction-item:hover {
+            background: rgba(15, 52, 96, 0.5);
+        }
+
+        .prediction-match {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .prediction-details {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .prediction-type, .probability, .odds {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .confidence {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--warning));
+            border-radius: 3px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--secondary);
+            padding: 3rem 0 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3, .footer-section h4 {
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: var(--highlight);
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        /* ===== RESPONSIVE STYLES ===== */
+        @media (max-width: 992px) {
+            .nav-menu {
+                position: fixed;
+                left: -100%;
+                top: 70px;
+                flex-direction: column;
+                background: var(--secondary);
+                width: 100%;
+                text-align: center;
+                transition: 0.3s;
+                box-shadow: 0 10px 27px rgba(0, 0, 0, 0.05);
+                padding: 2rem 0;
+                gap: 0;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-link {
+                display: block;
+                padding: 1rem;
+                border-radius: 0;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .predictions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .probability-display {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .teams-input {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .vs-static {
+                margin: 0.5rem 0;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+
+        /* ===== LOADING ANIMATIONS ===== */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--highlight);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===== SCROLL ANIMATIONS ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-robot"></i>
+                <span>SoccerAI Pro</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#dashboard" class="nav-link active">Dashboard</a>
+                <a href="#predictions" class="nav-link">AI Predictions</a>
+                <a href="#custom" class="nav-link">Custom Analysis</a>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn btn-primary btn-small">
+                    <i class="fas fa-bolt"></i> Live Data
+                </button>
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="dashboard">
+        <div class="container">
+            <div class="hero-content fade-in">
+                <h1>AI-Powered Soccer Predictions</h1>
+                <p class="hero-subtitle">Advanced machine learning analyzing 200+ data points for accurate match predictions and value bets</p>
+                
+                <div class="hero-stats">
+                    <div class="stat-card fade-in">
+                        <div class="stat-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>87.3%</h3>
+                            <p>Prediction Accuracy</p>
+                        </div>
+                    </div>
+                    <div class="stat-card fade-in">
+                        <div class="stat-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>2,500+</h3>
+                            <p>Matches Analyzed</p>
+                        </div>
+                    </div>
+                    <div class="stat-card fade-in">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>200+</h3>
+                            <p>Data Points per Match</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-large" onclick="loadTodayPredictions()">
+                        <i class="fas fa-bolt"></i> Get Today's Predictions
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="scrollToCustom()">
+                        <i class="fas fa-search"></i> Analyze Custom Match
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Today's Matches -->
+    <section class="matches-section">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Today's AI Predictions</h2>
+                <p>Real-time predictions using data from multiple sources with advanced machine learning models</p>
+            </div>
+
+            <div class="filters fade-in">
+                <button class="filter-btn active" data-filter="all">All Matches</button>
+                <button class="filter-btn" data-filter="high-confidence">High Confidence</button>
+                <button class="filter-btn" data-filter="win-btts">Win + BTTS</button>
+                <button class="filter-btn" data-filter="draw-btts">Draw + BTTS</button>
+            </div>
+
+            <div class="matches-grid" id="matchesGrid">
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>AI Agents are analyzing today's matches...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Prediction Section -->
+    <section class="custom-prediction" id="custom">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Custom Match Analysis</h2>
+                <p>Input any two teams and our AI will analyze 200+ factors to predict the outcome</p>
+            </div>
+
+            <div class="prediction-form fade-in">
+                <div class="form-group">
+                    <label for="homeTeam">Home Team</label>
+                    <input type="text" id="homeTeam" class="form-control" placeholder="Enter home team (e.g., Manchester United)">
+                </div>
+
+                <div class="form-group">
+                    <label for="awayTeam">Away Team</label>
+                    <input type="text" id="awayTeam" class="form-control" placeholder="Enter away team (e.g., Liverpool)">
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Factors (Optional)</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <select id="league" class="form-control">
+                            <option value="">Select League</option>
+                            <option value="premier">Premier League</option>
+                            <option value="laliga">La Liga</option>
+                            <option value="seriea">Serie A</option>
+                            <option value="bundesliga">Bundesliga</option>
+                            <option value="ligue1">Ligue 1</option>
+                        </select>
+                        <select id="venue" class="form-control">
+                            <option value="">Venue Type</option>
+                            <option value="home">Home Stadium</option>
+                            <option value="neutral">Neutral Venue</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%;" onclick="analyzeCustomMatch()">
+                    <i class="fas fa-robot"></i> Analyze Match with AI
+                </button>
+
+                <div class="prediction-result" id="predictionResult">
+                    <div class="result-header">
+                        <h3 class="result-title" id="resultTitle">Prediction Result</h3>
+                        <div class="confidence-score" id="confidenceScore">87% Confidence</div>
+                    </div>
+
+                    <div class="probability-display">
+                        <div class="probability-card" id="homeWinCard">
+                            <div class="probability-value" id="homeWinValue">45%</div>
+                            <div class="probability-label">Home Win</div>
+                        </div>
+                        <div class="probability-card" id="drawCard">
+                            <div class="probability-value" id="drawValue">30%</div>
+                            <div class="probability-label">Draw</div>
+                        </div>
+                        <div class="probability-card" id="awayWinCard">
+                            <div class="probability-value" id="awayWinValue">25%</div>
+                            <div class="probability-label">Away Win</div>
+                        </div>
+                    </div>
+
+                    <div class="recommendations">
+                        <h4>AI Recommendations</h4>
+                        <div class="bet-tags" id="recommendationTags">
+                            <span class="bet-tag">Home Win</span>
+                            <span class="bet-tag">Both Teams to Score</span>
+                        </div>
+                    </div>
+
+                    <div class="factors-analysis">
+                        <h4>Key Factors</h4>
+                        <div class="factors-grid" id="factorsGrid">
+                            <!-- Factors will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Predictions -->
+    <section class="predictions-section" id="predictions">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2>Advanced AI Betting Predictions</h2>
+                <p>Specialized models for specific betting markets with value detection</p>
+            </div>
+
+            <div class="predictions-grid">
+                <div class="prediction-model-card fade-in">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <h3>Win + BTTS Predictor</h3>
+                        <span class="model-accuracy">84.7% accuracy</span>
+                    </div>
+                    <div class="model-predictions" id="winBttsPredictions">
+                        <div class="prediction-item">
+                            <div class="prediction-match">Manchester United vs Liverpool</div>
+                            <div class="prediction-details">
+                                <span class="prediction-type">Home Win</span>
+                                <span class="probability">BTTS: 68%</span>
+                                <span class="odds">Odds: 3.2</span>
+                            </div>
+                            <div class="confidence">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 75%"></div>
+                                </div>
+                                <span>75% confidence</span>
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-match">Arsenal vs Chelsea</div>
+                            <div class="prediction-details">
+                                <span class="prediction-type">Away Win</span>
+                                <span class="probability">BTTS: 72%</span>
+                                <span class="odds">Odds: 4.1</span>
+                            </div>
+                            <div class="confidence">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 68%"></div>
+                                </div>
+                                <span>68% confidence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prediction-model-card fade-in">
+                    <div class="model-header">
+                        <div class="model-icon">
+                            <i class="fas fa-equals"></i>
+                        </div>
+                        <h3>Draw + BTTS Predictor</h3>
+                        <span class="model-accuracy">79.2% accuracy</span>
+                    </div>
+                    <div class="model-predictions" id="drawBttsPredictions">
+                        <div class="prediction-item">
+                            <div class="prediction-match">Barcelona vs Real Madrid</div>
+                            <div class="prediction-details">
+                                <span class="prediction-type">Draw</span>
+                                <span class="probability">BTTS: 72%</span>
+                                <span class="odds">Odds: 4.5</span>
+                            </div>
+                            <div class="confidence">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 68%"></div>
+                                </div>
+                                <span>68% confidence</span>
+                            </div>
+                        </div>
+                        <div class="prediction-item">
+                            <div class="prediction-match">AC Milan vs Inter Milan</div>
+                            <div class="prediction-details">
+                                <span class="prediction-type">Draw</span>
+                                <span class="probability">BTTS: 65%</span>
+                                <span class="odds">Odds: 3.8</span>
+                            </div>
+                            <div class="confidence">
+                                <div class="confidence-bar">
+                                    <div class="confidence-fill" style="width: 62%"></div>
+                                </div>
+                                <span>62% confidence</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SoccerAI Pro</h3>
+                    <p>Advanced AI-powered football predictions using machine learning and statistical analysis.</p>
+                    <div class="footer-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h4>AI Systems</h4>
+                    <ul>
+                        <li><a href="#">Prediction Models</a></li>
+                        <li><a href="#">Data Analytics</a></li>
+                        <li><a href="#">Machine Learning</a></li>
+                        <li><a href="#">Value Detection</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">How It Works</a></li>
+                        <li><a href="#">API Documentation</a></li>
+                        <li><a href="#">Research Papers</a></li>
+                        <li><a href="#">System Status</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 SoccerAI Pro. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== JAVASCRIPT FUNCTIONALITY =====
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize animations
+            initAnimations();
+            
+            // Load sample data
+            loadTodayPredictions();
+            
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Initialize scroll animations
+        function initAnimations() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(el => observer.observe(el));
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation toggle for mobile
+            const navToggle = document.querySelector('.nav-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (navToggle) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                    navToggle.classList.toggle('active');
+                });
+            }
+
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const filter = e.target.getAttribute('data-filter');
+                    filterMatches(filter);
+                    
+                    // Update active button
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+
+            // Navigation smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Load today's predictions
+        function loadTodayPredictions() {
+            const matchesGrid = document.getElementById('matchesGrid');
+            
+            // Simulate loading
+            setTimeout(() => {
+                matchesGrid.innerHTML = `
+                    <div class="match-card fade-in">
+                        <div class="match-header">
+                            <div class="match-teams">
+                                <div class="team">
+                                    <span class="team-name">Manchester United</span>
+                                </div>
+                                <div class="vs">VS</div>
+                                <div class="team home">
+                                    <span class="team-name">Liverpool</span>
+                                </div>
+                            </div>
+                            <div class="match-league">Premier League</div>
+                        </div>
+                        
+                        <div class="match-prediction">
+                            <div class="prediction-header">
+                                <span class="prediction-badge badge-home-win">Home Win</span>
+                                <span class="confidence-score">72% confidence</span>
+                            </div>
+                            <div class="confidence-meter">
+                                <div class="confidence-level" style="width: 72%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="recommended-bets">
+                            <strong>AI Recommendations:</strong>
+                            <div class="bet-tags">
+                                <span class="bet-tag">Home Win</span>
+                                <span class="bet-tag">Both Teams to Score</span>
+                                <span class="bet-tag">Over 2.5 Goals</span>
+                            </div>
+                        </div>
+                        
+                        <div class="match-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                Today, 15:00
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Old Trafford
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-cloud"></i>
+                                Clear
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card fade-in">
+                        <div class="match-header">
+                            <div class="match-teams">
+                                <div class="team">
+                                    <span class="team-name">Barcelona</span>
+                                </div>
+                                <div class="vs">VS</div>
+                                <div class="team home">
+                                    <span class="team-name">Real Madrid</span>
+                                </div>
+                            </div>
+                            <div class="match-league">La Liga</div>
+                        </div>
+                        
+                        <div class="match-prediction">
+                            <div class="prediction-header">
+                                <span class="prediction-badge badge-draw">Draw</span>
+                                <span class="confidence-score">68% confidence</span>
+                            </div>
+                            <div class="confidence-meter">
+                                <div class="confidence-level" style="width: 68%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="recommended-bets">
+                            <strong>AI Recommendations:</strong>
+                            <div class="bet-tags">
+                                <span class="bet-tag">Draw</span>
+                                <span class="bet-tag">Both Teams to Score</span>
+                            </div>
+                        </div>
+                        
+                        <div class="match-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                Today, 20:00
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Camp Nou
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-cloud"></i>
+                                Partly Cloudy
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card fade-in">
+                        <div class="match-header">
+                            <div class="match-teams">
+                                <div class="team">
+                                    <span class="team-name">Bayern Munich</span>
+                                </div>
+                                <div class="vs">VS</div>
+                                <div class="team home">
+                                    <span class="team-name">Borussia Dortmund</span>
+                                </div>
+                            </div>
+                            <div class="match-league">Bundesliga</div>
+                        </div>
+                        
+                        <div class="match-prediction">
+                            <div class="prediction-header">
+                                <span class="prediction-badge badge-away-win">Away Win</span>
+                                <span class="confidence-score">65% confidence</span>
+                            </div>
+                            <div class="confidence-meter">
+                                <div class="confidence-level" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="recommended-bets">
+                            <strong>AI Recommendations:</strong>
+                            <div class="bet-tags">
+                                <span class="bet-tag">Away Win</span>
+                                <span class="bet-tag">Over 3.5 Goals</span>
+                            </div>
+                        </div>
+                        
+                        <div class="match-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar"></i>
+                                Today, 17:30
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Allianz Arena
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-cloud"></i>
+                                Rain
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }, 1500);
+        }
+
+        // Filter matches based on selection
+        function filterMatches(filter) {
+            const matches = document.querySelectorAll('.match-card');
+            
+            matches.forEach(match => {
+                match.style.display = 'block';
+                
+                if (filter === 'high-confidence') {
+                    const confidenceText = match.querySelector('.confidence-score').textContent;
+                    const confidence = parseInt(confidenceText);
+                    if (confidence < 70) match.style.display = 'none';
+                } else if (filter === 'win-btts') {
+                    const bets = match.querySelectorAll('.bet-tag');
+                    let hasWin = false;
+                    let hasBtts = false;
+                    
+                    bets.forEach(bet => {
+                        if (bet.textContent.includes('Win')) hasWin = true;
+                        if (bet.textContent.includes('Both Teams')) hasBtts = true;
+                    });
+                    
+                    if (!hasWin || !hasBtts) match.style.display = 'none';
+                } else if (filter === 'draw-btts') {
+                    const bets = match.querySelectorAll('.bet-tag');
+                    let hasDraw = false;
+                    let hasBtts = false;
+                    
+                    bets.forEach(bet => {
+                        if (bet.textContent.includes('Draw')) hasDraw = true;
+                        if (bet.textContent.includes('Both Teams')) hasBtts = true;
+                    });
+                    
+                    if (!hasDraw || !hasBtts) match.style.display = 'none';
+                }
+            });
+        }
+
+        // Scroll to custom prediction section
+        function scrollToCustom() {
+            document.getElementById('custom').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Analyze custom match
+        function analyzeCustomMatch() {
+            const homeTeam = document.getElementById('homeTeam').value;
+            const awayTeam = document.getElementById('awayTeam').value;
+            const league = document.getElementById('league').value;
+            const venue = document.getElementById('venue').value;
+            
+            if (!homeTeam || !awayTeam) {
+                alert('Please enter both team names');
+                return;
+            }
+            
+            // Show loading state
+            const resultDiv = document.getElementById('predictionResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="loading-state">
+                    <div class="loading-spinner"></div>
+                    <p>AI is analyzing ${homeTeam} vs ${awayTeam}...</p>
+                </div>
+            `;
+            
+            // Simulate AI analysis
+            setTimeout(() => {
+                generateCustomPrediction(homeTeam, awayTeam, league, venue);
+            }, 2000);
+        }
+
+        // Generate custom prediction
+        function generateCustomPrediction(homeTeam, awayTeam, league, venue) {
+            // Simulate AI analysis with realistic probabilities
+            const homeWinProb = 40 + Math.random() * 30;
+            const drawProb = 20 + Math.random() * 20;
+            const awayWinProb = 100 - homeWinProb - drawProb;
+            
+            // Determine most likely outcome
+            let outcome, confidence;
+            if (homeWinProb >= drawProb && homeWinProb >= awayWinProb) {
+                outcome = 'HOME_WIN';
+                confidence = homeWinProb;
+            } else if (awayWinProb >= homeWinProb && awayWinProb >= drawProb) {
+                outcome = 'AWAY_WIN';
+                confidence = awayWinProb;
+            } else {
+                outcome = 'DRAW';
+                confidence = drawProb;
+            }
+            
+            // Generate factors
+            const factors = [
+                { name: 'Team Form', value: 70 + Math.random() * 25, impact: 'HIGH' },
+                { name: 'Head-to-Head', value: 50 + Math.random() * 40, impact: 'MEDIUM' },
+                { name: 'Home Advantage', value: venue === 'home' ? 80 : 50, impact: 'HIGH' },
+                { name: 'Attack Strength', value: 60 + Math.random() * 35, impact: 'HIGH' },
+                { name: 'Defense Quality', value: 55 + Math.random() * 40, impact: 'MEDIUM' },
+                { name: 'Recent Performance', value: 65 + Math.random() * 30, impact: 'HIGH' },
+                { name: 'Player Injuries', value: 20 + Math.random() * 70, impact: 'MEDIUM' },
+                { name: 'Motivation Level', value: 70 + Math.random() * 25, impact: 'MEDIUM' }
+            ];
+            
+            // Generate recommendations
+            const recommendations = [];
+            if (outcome === 'HOME_WIN') recommendations.push('Home Win');
+            if (outcome === 'AWAY_WIN') recommendations.push('Away Win');
+            if (outcome === 'DRAW') recommendations.push('Draw');
+            
+            // Both teams to score probability
+            const bttsProb = 40 + Math.random() * 50;
+            if (bttsProb > 50) recommendations.push('Both Teams to Score');
+            
+            // Over/under probability
+            const over25Prob = 50 + Math.random() * 40;
+            if (over25Prob > 60) recommendations.push('Over 2.5 Goals');
+            
+            // Update UI with results
+            displayCustomPrediction(
+                homeTeam, awayTeam, 
+                homeWinProb, drawProb, awayWinProb, 
+                confidence, outcome, recommendations, factors
+            );
+        }
+
+        // Display custom prediction results
+        function displayCustomPrediction(homeTeam, awayTeam, homeWinProb, drawProb, awayWinProb, confidence, outcome, recommendations, factors) {
+            const resultDiv = document.getElementById('predictionResult');
+            
+            // Update result title
+            document.getElementById('resultTitle').textContent = `${homeTeam} vs ${awayTeam}`;
+            document.getElementById('confidenceScore').textContent = `${Math.round(confidence)}% Confidence`;
+            
+            // Update probabilities
+            document.getElementById('homeWinValue').textContent = `${Math.round(homeWinProb)}%`;
+            document.getElementById('drawValue').textContent = `${Math.round(drawProb)}%`;
+            document.getElementById('awayWinValue').textContent = `${Math.round(awayWinProb)}%`;
+            
+            // Highlight most probable outcome
+            document.getElementById('homeWinCard').classList.remove('active');
+            document.getElementById('drawCard').classList.remove('active');
+            document.getElementById('awayWinCard').classList.remove('active');
+            
+            if (outcome === 'HOME_WIN') {
+                document.getElementById('homeWinCard').classList.add('active');
+            } else if (outcome === 'DRAW') {
+                document.getElementById('drawCard').classList.add('active');
+            } else {
+                document.getElementById('awayWinCard').classList.add('active');
+            }
+            
+            // Update recommendations
+            const recommendationTags = document.getElementById('recommendationTags');
+            recommendationTags.innerHTML = '';
+            recommendations.forEach(rec => {
+                const tag = document.createElement('span');
+                tag.className = 'bet-tag';
+                tag.textContent = rec;
+                recommendationTags.appendChild(tag);
+            });
+            
+            // Update factors
+            const factorsGrid = document.getElementById('factorsGrid');
+            factorsGrid.innerHTML = '';
+            factors.forEach(factor => {
+                const factorCard = document.createElement('div');
+                factorCard.className = 'factor-card';
+                
+                const impactClass = factor.impact === 'HIGH' ? 'value-positive' : 
+                                  factor.impact === 'MEDIUM' ? 'value-warning' : 'value-negative';
+                
+                factorCard.innerHTML = `
+                    <div class="factor-value ${impactClass}">${Math.round(factor.value)}%</div>
+                    <div class="factor-label">${factor.name}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.3rem;">${factor.impact} Impact</div>
+                `;
+                
+                factorsGrid.appendChild(factorCard);
+            });
+            
+            // Show the result
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
