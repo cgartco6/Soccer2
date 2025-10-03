@@ -1,0 +1,280 @@
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 1000px;
+    }
+    
+    .hero-content h1 {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: 70px;
+        flex-direction: column;
+        background: white;
+        width: 100%;
+        text-align: center;
+        transition: 0.3s;
+        box-shadow: var(--shadow);
+        padding: 2rem 0;
+        gap: 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    .nav-toggle {
+        display: flex;
+    }
+
+    .nav-actions {
+        display: none;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .performance-charts {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .section-header h2 {
+        font-size: 2rem;
+    }
+
+    .matches-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .predictions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-agents-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .live-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-large {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+
+    .status-items {
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .footer-links {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .hero {
+        padding: 100px 0 60px;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .match-card,
+    .prediction-model-card,
+    .ai-agent-card,
+    .live-card {
+        padding: 1.5rem;
+    }
+
+    .model-header,
+    .agent-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .model-accuracy,
+    .agent-status {
+        margin-left: 0;
+    }
+
+    .agent-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .search-box {
+        flex-direction: column;
+        border-radius: var(--border-radius);
+    }
+
+    .search-box input {
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
+    }
+
+    .search-btn {
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+    }
+}
+
+/* High-resolution displays */
+@media (min-width: 1400px) {
+    .container {
+        max-width: 1320px;
+    }
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .status-bar,
+    .hero-actions,
+    .nav-actions,
+    .footer,
+    .btn-filter,
+    .model-actions,
+    .agent-actions {
+        display: none !important;
+    }
+
+    .hero {
+        padding: 20px 0 !important;
+        background: white !important;
+        color: black !important;
+    }
+
+    .hero-content h1 {
+        color: black !important;
+        text-shadow: none !important;
+    }
+
+    .match-card,
+    .prediction-model-card,
+    .ai-agent-card {
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --light-bg: #1a1a1a;
+        --text-dark: #ecf0f1;
+    }
+
+    .match-card,
+    .prediction-model-card,
+    .ai-agent-card,
+    .live-card,
+    .analytics-dashboard,
+    .model-performance {
+        background: #2d2d2d;
+        color: var(--text-light);
+    }
+
+    .search-box input {
+        background: #1a1a1a;
+        color: var(--text-light);
+        border-color: #444;
+    }
+}
+
+/* Mobile landscape */
+@media (max-height: 500px) and (orientation: landscape) {
+    .hero {
+        padding: 80px 0 40px;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: none;
+    }
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .match-card:hover,
+    .ai-agent-card:hover {
+        transform: none;
+    }
+
+    .nav-link {
+        padding: 1rem;
+    }
+
+    .btn-large,
+    .btn-primary,
+    .btn-secondary {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
